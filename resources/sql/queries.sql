@@ -1,4 +1,10 @@
 -- :name create-user! :! :n
+-- creates a new user record
+INSERT INTO users
+(id, pass)
+VALUES (:id, :pass)
+
+-- :name create-userall! :! :n
 -- :doc creates a new user record
 INSERT INTO users
 (id, first_name, last_name, email, pass)
@@ -19,3 +25,21 @@ WHERE id = :id
 -- :doc delete a user given the id
 DELETE FROM users
 WHERE id = :id
+
+--START:product-upload
+-- :name product-upload! :! :n
+-- saves a product indo to the database
+INSERT INTO products
+(owner, name,price, description, imgpath)
+VALUES (:owner, :name, :price, :description, :imgpath)
+--END:upload-product
+
+-- :name get-products :? :*
+-- :doc retrieve products.
+SELECT id,owner, name,price, description, imgpath FROM products
+
+-- :name get-product :? :1
+-- :doc retrieve a product given the id.
+SELECT * FROM products
+WHERE id = :id
+

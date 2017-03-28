@@ -1,7 +1,7 @@
 (ns sshop-demo.middleware
   (:require [sshop-demo.env :refer [defaults]]
             [clojure.tools.logging :as log]
-            [sshop-demo.layout :refer [*app-context* error-page]]
+            [sshop-demo.layout :refer [*app-context* *identity* error-page]]
             [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
             [ring.middleware.webjars :refer [wrap-webjars]]
             [muuntaja.middleware :refer [wrap-format wrap-params]]
@@ -64,15 +64,22 @@
   (restrict handler {:handler authenticated?
                      :on-error on-error}))
 
+(defn wrap-identity [handler]
+  (fn [request]
+    (binding [*identity* (get-in request [:session :identity])]
+      (handler request))))
+
 (defn wrap-auth [handler]
   (let [backend (session-backend)]
     (-> handler
+        wrap-identity
         (wrap-authentication backend)
         (wrap-authorization backend))))
 
 (defn wrap-base [handler]
   (-> ((:middleware defaults) handler)
       wrap-auth
+      wrap-formats
       wrap-webjars
       wrap-flash
       (wrap-session {:cookie-attrs {:http-only true}})

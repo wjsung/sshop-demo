@@ -3,7 +3,9 @@
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
 
-  :dependencies [[buddy "1.3.0"]
+  :dependencies [
+                 [bouncer "1.0.0"]
+                 [buddy "1.3.0"]
                  [cljs-ajax "0.5.8"]
                  [com.h2database/h2 "1.4.193"]
                  [compojure "1.5.2"]
@@ -33,7 +35,8 @@
                  [ring/ring-core "1.6.0-RC1"]
                  [ring/ring-defaults "0.2.3"]
                  [secretary "1.2.3"]
-                 [selmer "1.10.7"]]
+                 [selmer "1.10.7"]
+                 ]
 
   :min-lein-version "2.0.0"
 
