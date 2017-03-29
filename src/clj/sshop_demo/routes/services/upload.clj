@@ -11,7 +11,7 @@
            javax.imageio.ImageIO
            java.net.URLEncoder))
 
-(def uploaddir "./resource/public/img/upload/")
+(def uploaddir "./resources/public/img/upload/")
 
 (def thumb-size 150)
 
@@ -55,7 +55,7 @@
          :message "server error occurred while adding the product"}))))
 
 (defn upload-product! [user {:keys [tempfile filename content-type]}  name price description]
-  (if (upload-product-errors [{:name name :price price}])
+  (if (upload-product-errors {:name name :price price} )
     (response/precondition-failed {:result :error})
     (try
     (let [db-file-name (str user "_" (System/currentTimeMillis) "_" filename)]

@@ -13,7 +13,7 @@
              [= pass-confirm :message "re-entered password does not match"]])))
 
 
-(defn upload-product-errors [{:keys [name price] :as params}]
+(defn upload-product-errors [ {:keys [name price ] :as params}]
   (first
     (b/validate
       params
