@@ -5,7 +5,9 @@
             [compojure.api.upload :refer :all]
             [compojure.api.meta :refer [restructure-param]]
             [schema.core :as s]
+            [sshop-demo.db.core :as db]
             [sshop-demo.routes.services.auth :as auth]
+            [sshop-demo.routes.services.main :as main]
             [sshop-demo.routes.services.upload :as upload]
             [ring.util.http-response :refer :all]
             ))
@@ -62,6 +64,20 @@
     :summary "remove user session"
     :return Result
     (auth/logout!))
+
+  (GET "/products" []
+    :summary "get list of products"
+    ;:return Result
+    ;(main/products!)
+    (ok (db/get-products ))
+    )
+
+  (GET "/product/:id" []
+    :summary "get product detail"
+    :path-params [id :- Long]
+    ;:return Result
+    (ok (db/get-product {:id id} ))
+    )
 
   (context "/api" []
     :tags ["thingie"]

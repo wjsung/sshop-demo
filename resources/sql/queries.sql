@@ -40,6 +40,6 @@ SELECT id,owner, name,price, description, imgpath FROM products
 
 -- :name get-product :? :1
 -- :doc retrieve a product given the id.
-SELECT * FROM products
+SELECT id,owner, name,price, description, imgpath FROM products
 WHERE id = :id
 
