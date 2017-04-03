@@ -26,27 +26,135 @@
       {:on-click #(swap! collapsed? not)} "☰"]
      [:div.collapse.navbar-toggleable-xs
       (when-not @collapsed? {:class "in"})
-      [:a.navbar-brand {:href "#/"} "sshop-demo"]
+      [:a.navbar-brand {:href "/"} "sshop-demo"]
       [:ul.nav.navbar-nav
        [nav-link "#/" "Home" :home collapsed?]
-       [nav-link "#/about" "About" :about collapsed?]]]]))
+       [nav-link "#/about" "About" :about collapsed?]
+       [nav-link "#/docs" "Docs" :docs collapsed?]
+       [nav-link "#/admin" "Admin" :admin collapsed?]]]]))
 
 (defn about-page []
   [:div.container
    [:div.row
     [:div.col-md-12
+     [:h1 "This project is a shoes shop demo."]
      [:img {:src (str js/context "/img/warning_clojure.png")}]]]])
 
-(defn home-page []
+(defn docs-page []
   [:div.container
    (when-let [docs @(rf/subscribe [:docs])]
      [:div.row>div.col-sm-12
       [:div {:dangerouslySetInnerHTML
              {:__html (md->html docs)}}]])])
 
+(defn product-item
+  []
+  (let [editing (r/atom false)]
+    (fn [{:keys [id owner name price description imgpath]}]
+       [:div.block {:style {:display "inline-block"}}
+        [:table
+         [:tbody
+         [:tr
+          [:td [:img {:src (str js/context "/img/upload/thumb_" imgpath)}] ]
+          ]
+         [:tr
+          [:td name ]
+          ]
+         [:tr
+          [:td (.valueOf price) ]
+          ]
+          ]
+         ]
+        ]
+       )))
+
+(defn product-list []
+  [:div.container
+   (when-let [products @(rf/subscribe [:products])]
+     [:div.row>div.col-sm-12
+      [:div.table {:style {:display "table" :text-align "center" :width "100%"}}
+       (for [product  products]
+         ^{:key (:id product)} [product-item product])]
+      ])])
+
+
+(defn home-page []
+    (fn []
+      [:div.container
+       [:div.jumbotron
+        [:h1 "Welcome to Shoes Shop"]]
+       [:div.row
+        [:div.col-md-12
+
+         (product-list)
+
+         ]]]))
+
+
+
+(defn product-item-admin
+  []
+  (let [editing (r/atom false)]
+    (fn [{:keys [id owner name price description imgpath regdate editdate]}]
+      [:div.block {:style {:display "inline-block"}}
+       [:table
+        [:tbody
+         [:tr
+          [:td [:img {:src (str js/context "/img/upload/thumb_" imgpath)}] ]
+          ]
+         [:tr
+          [:td name ]
+          ]
+         [:tr
+          [:td (.valueOf price) ]
+          ]
+         [:tr
+          [:td  description ]
+          ]
+
+         [:tr
+          [:td [:textarea (clojure.string/replace description #"\\r\\n|\\n|\\r" "\n" )  ] ]
+          ]
+
+         [:tr
+          [:td [:textarea description ] ]
+          ]
+
+         [:tr
+          [:td regdate ]
+          ]
+         [:tr
+          [:td editdate ]
+          ]
+         ]
+        ]
+       ]
+      )))
+
+(defn product-list-admin []
+  [:div.container
+   (when-let [products @(rf/subscribe [:products])]
+     [:div.row>div.col-sm-12
+      [:div.table {:style {:display "table" :text-align "center" :width "100%"}}
+       (for [product  products]
+         ^{:key (:id product)} [product-item-admin product])]
+      ])])
+
+(defn admin-page []
+  (fn []
+    [:div.container
+     [:div.row
+      [:div.col-md-12
+
+       (product-list-admin)
+
+       ]]]))
+
 (def pages
   {:home #'home-page
-   :about #'about-page})
+   :about #'about-page
+   :docs #'docs-page
+   :admin #'admin-page})
 
 (defn page []
   [:div
@@ -62,6 +170,11 @@
 
 (secretary/defroute "/about" []
   (rf/dispatch [:set-active-page :about]))
+
+(secretary/defroute "/docs" []
+                    (rf/dispatch [:set-active-page :docs]))
+(secretary/defroute "/admin" []
+                    (rf/dispatch [:set-active-page :admin]))
 
 ;; -------------------------
 ;; History
@@ -79,6 +192,11 @@
 (defn fetch-docs! []
   (GET "/docs" {:handler #(rf/dispatch [:set-docs %])}))
 
+
+(defn get-products! []
+  (GET "/products" {:handler #(rf/dispatch [:get-products %])}))
+
+
 (defn mount-components []
   (rf/clear-subscription-cache!)
   (r/render [#'page] (.getElementById js/document "app")))
@@ -87,5 +205,6 @@
   (rf/dispatch-sync [:initialize-db])
   (load-interceptors!)
   (fetch-docs!)
+  (get-products!)
   (hook-browser-navigation!)
   (mount-components))

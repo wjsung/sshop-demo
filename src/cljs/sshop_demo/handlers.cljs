@@ -16,3 +16,9 @@
   :set-docs
   (fn [db [_ docs]]
     (assoc db :docs docs)))
+
+
+(reg-event-db
+  :get-products
+  (fn [db [_ products]]
+    (assoc db :products products)))

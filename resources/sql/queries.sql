@@ -30,16 +30,31 @@ WHERE id = :id
 -- :name product-upload! :! :n
 -- saves a product indo to the database
 INSERT INTO products
-(owner, name,price, description, imgpath)
-VALUES (:owner, :name, :price, :description, :imgpath)
+(owner, name,price, description, imgpath,regdate,editdate)
+VALUES (:owner, :name, :price, :description, :imgpath, current_date()||' '||current_time(), current_date()||' '||current_time() )
 --END:upload-product
 
 -- :name get-products :? :*
 -- :doc retrieve products.
-SELECT id,owner, name,price, description, imgpath FROM products
+SELECT id,owner, name,price, description, imgpath,regdate,editdate FROM products
 
 -- :name get-product :? :1
 -- :doc retrieve a product given the id.
-SELECT id,owner, name,price, description, imgpath FROM products
+SELECT id,owner, name,price, description, imgpath,regdate,editdate FROM products
 WHERE id = :id
 
+
+-- :name update-product! :! :n
+-- :doc update an existing product record
+UPDATE products
+SET name = :name
+, price = :price
+, description = :description
+, imgpath = :imgpath
+, editdate = current_date()||' '||current_time()
+WHERE id = :id
+
+-- :name delete-product! :! :n
+-- :doc delete an existing user record
+DELETE FROM products
+WHERE id = :id

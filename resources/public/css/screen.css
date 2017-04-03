@@ -67,3 +67,10 @@ body {
     }
 }
 
+.table {
+margin : 10px;
+}
+.block {
+padding : 20px;
+width :250px;
+}
